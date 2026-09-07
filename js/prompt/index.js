@@ -149,12 +149,23 @@ function injectCSS() {
        metrics differ at all the offset ACCUMULATES along the line and the
        sentence is drawn twice, sliding apart to the right; reported on AI
        Prompt, which shares this backdrop (ai-prompt.md #21). Zeroing the
-       selection colour makes the invariant true again. The highlight rectangle
-       still paints and the backdrop supplies the visible text over it, so
-       selecting looks normal. Note the pack already had this idiom in Note's
-       code view (js/note/css.mjs). Do NOT restore a visible selection colour. */
-    .pix-prm-ta::selection { color:transparent; }
-    .pix-prm-ta::-moz-selection { color:transparent; }
+       selection colour makes the invariant true again, and the backdrop supplies
+       the visible text over the highlight.
+       ⚠️ THE BACKGROUND HALF IS MANDATORY, and leaving it out is what broke
+       selection for a user (reported 2026-09-07, shipped in v1.4.135).
+       DECLARING "::selection" AT ALL MAKES CHROME DROP THE UA DEFAULT HIGHLIGHT
+       BACKGROUND, so "color:transparent" alone paints transparent glyphs on no
+       background: the text is still selected and copyable, but NOTHING renders,
+       which reads as "I cannot select the prompt any more". Measured live and
+       mutation-validated - removing the rule brought the highlight straight back,
+       and a loud red background proved ours is honoured.
+       Note's code view (js/note/css.mjs) always declared BOTH; v1.4.135 copied
+       only the colour half, which is worse than not copying it at all
+       ([[feedback_partial_mirror_worse_than_none]]).
+       Do NOT restore a visible selection FOREGROUND colour, and do NOT remove
+       the background. */
+    .pix-prm-ta::selection { color:transparent; background:color-mix(in srgb, var(--acc,${BRAND}) 35%, transparent); }
+    .pix-prm-ta::-moz-selection { color:transparent; background:color-mix(in srgb, var(--acc,${BRAND}) 35%, transparent); }
     /* preview GROWS with the node (flex, no fixed cap) so a big node shows more.
        LIGHTER gray (not the dark #1d1d1d of the editable inputs) so it reads as a
        read-only preview, not another input box. The plain colour lives on the CONTAINER,

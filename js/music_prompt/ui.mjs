@@ -182,11 +182,19 @@ export function injectCSS() {
        differ at all the offset accumulates along the line and the sentence is
        drawn twice, sliding apart to the right - the "ghosted font" report of
        2026-08-19. Zeroing the selection colour keeps ONE visible text layer,
-       which is the invariant the whole design rests on. The highlight
-       rectangle still paints and the backdrop supplies the text over it.
-       Same idiom as Note's code view. Do not restore a visible colour here. */
-    .pix-mp-idea::selection { color:transparent; }
-    .pix-mp-idea::-moz-selection { color:transparent; }
+       which is the invariant the whole design rests on, and the backdrop
+       supplies the text over the highlight.
+       ⚠️ THE BACKGROUND HALF IS MANDATORY. DECLARING "::selection" AT ALL MAKES
+       CHROME DROP THE UA DEFAULT HIGHLIGHT BACKGROUND, so "color:transparent"
+       alone renders NOTHING on selection - still selected and copyable, but
+       invisible, which a user reported as "I cannot select the prompt any more"
+       (2026-09-07, shipped in v1.4.135). Diagnosed on Prompt Pixaroma and
+       mutation-validated there. Note's code view always declared BOTH halves;
+       v1.4.135 copied only the colour ([[feedback_partial_mirror_worse_than_none]]).
+       Do NOT restore a visible selection FOREGROUND colour, and do NOT remove the
+       background. */
+    .pix-mp-idea::selection { color:transparent; background:color-mix(in srgb, ${ACC} 35%, transparent); }
+    .pix-mp-idea::-moz-selection { color:transparent; background:color-mix(in srgb, ${ACC} 35%, transparent); }
     /* Tags: opens the shared library, the same one Prompt Pixaroma uses. Sized
        to the Caption/Lyrics segment beside it (20px, not the sibling's 23px)
        because this row is tighter - it already carries the segment, the seed

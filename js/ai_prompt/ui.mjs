@@ -225,12 +225,19 @@ export function injectCSS() {
        the right. That is the "ghosted font" report (2026-08-19), whose video shows
        "A woman in a fiery plume" doubled inside the selection.
        Zeroing the selection colour restores the invariant this design rests on -
-       ONE visible layer, always. The highlight rectangle still paints, and the
-       backdrop (position:absolute, so it paints ABOVE this in-flow textarea)
-       supplies the visible text over it, so selecting looks completely normal.
-       Do NOT "restore" a visible selection colour here. */
-    .pix-ap-idea::selection { color:transparent; }
-    .pix-ap-idea::-moz-selection { color:transparent; }
+       ONE visible layer, always. The backdrop (position:absolute, so it paints
+       ABOVE this in-flow textarea) supplies the visible text over the highlight.
+       ⚠️ THE BACKGROUND HALF IS MANDATORY. DECLARING "::selection" AT ALL MAKES
+       CHROME DROP THE UA DEFAULT HIGHLIGHT BACKGROUND, so "color:transparent"
+       alone renders NOTHING on selection - still selected and copyable, but
+       invisible, which a user reported as "I cannot select the prompt any more"
+       (2026-09-07, shipped in v1.4.135). Diagnosed on the sibling Prompt node and
+       mutation-validated there. Note's code view always declared BOTH halves;
+       v1.4.135 copied only the colour ([[feedback_partial_mirror_worse_than_none]]).
+       Do NOT restore a visible selection FOREGROUND colour, and do NOT remove the
+       background. */
+    .pix-ap-idea::selection { color:transparent; background:color-mix(in srgb, ${ACC} 35%, transparent); }
+    .pix-ap-idea::-moz-selection { color:transparent; background:color-mix(in srgb, ${ACC} 35%, transparent); }
 
     /* NO expanded-preview box here, deliberately - see ai-prompt.md #21. One was
        built and removed the same day: this face already carries a banner, two
