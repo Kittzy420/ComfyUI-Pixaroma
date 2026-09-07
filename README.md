@@ -386,6 +386,9 @@ Master the Pixaroma suite with our video guides and workflow deep-dives:
 
 ## 🛠 Changelog
 
+### **September 7, 2026 · v1.4.144**
+- **Fixed: selecting text in Prompt, AI Prompt and Music Prompt showed no highlight.** The words were selected and copying worked, but nothing showed, so there was no way to tell.
+
 ### **September 6, 2026 · v1.4.143**
 - **Fixed: a 16-bit picture came out almost white**, in Inpaint Crop, Image Crop, Image Composer layers and AudioReact. The preview looked right the whole time, so it read as the node being broken.
 - **The download is smaller.** Developer tools and notes that never run on your machine are no longer packed into the release.
